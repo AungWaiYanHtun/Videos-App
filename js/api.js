@@ -36,7 +36,7 @@
         if (e.lengthComputable && onProgress) onProgress(Math.round((e.loaded / e.total) * 100));
       };
       xhr.onload = () => (xhr.status < 300 ? resolve() : reject(new Error('Upload failed (' + xhr.status + ')')));
-      xhr.onerror = () => reject(new Error('Network error - R2 CORS ကိုစစ်ပါ'));
+      xhr.onerror = () => reject(new Error('Network error - Sign out/Sign in ပြန်ဝင်ကြည့်ပါ'));
       xhr.send(file);
     });
     return signed; // { key, publicUrl }
@@ -51,6 +51,7 @@
     createTitle: (data) => request('/api/titles', { method: 'POST', body: data }),
     updateTitle: (id, data) => request('/api/titles/' + id, { method: 'PATCH', body: data }),
     deleteTitle: (id) => request('/api/titles/' + id, { method: 'DELETE' }),
+    getAllVideos: () => request('/api/videos'),
     addVideo: (data) => request('/api/videos', { method: 'POST', body: data }),
     renameVideo: (id, name) => request('/api/videos/' + id, { method: 'PATCH', body: { name } }),
     deleteVideo: (id) => request('/api/videos/' + id, { method: 'DELETE' }),

@@ -14,6 +14,8 @@
     videoFile: null,
     playing: null,      // ကြည့်နေတဲ့ video
     view: 'titles',
+    editMode: false,
+    allVideos: [],
   };
 
   /* ---------- Utils ---------- */
@@ -57,6 +59,7 @@
     document.body.classList.toggle('is-admin', on);
     $('#loginBox').classList.toggle('hidden', on);
     $('#logoutBox').classList.toggle('hidden', !on);
+    if (!on) setEditMode(false);
     updateFab();
   }
   const isAdmin = () => document.body.classList.contains('is-admin');
@@ -67,6 +70,8 @@
     $$('.view').forEach((v) => v.classList.toggle('active', v.id === 'view-' + name));
     $$('.tab').forEach((t) => t.classList.toggle('active', t.dataset.tab === (name === 'detail' ? 'titles' : name)));
     updateFab();
+    if (name === 'videos') loadAllVideos();
+    if (name !== 'titles') setEditMode(false);
     if (inTelegram) name === 'detail' ? tg.BackButton.show() : tg.BackButton.hide();
     window.scrollTo(0, 0);
   }
@@ -110,7 +115,8 @@
     $('#grid').innerHTML = list
       .map(
         (t) => `
-      <button class="card" data-id="${t.id}">
+      <button class="card${state.editMode ? ' editing' : ''}" data-id="${t.id}">
+        ${state.editMode ? '<span class="edit-badge">✎</span>' : ''}
         ${t.cover_url
           ? `<img class="card-cover" src="${esc(t.cover_url)}" alt="" loading="lazy" />`
           : `<div class="card-placeholder" style="background:${gradientFor(t.id)}">${esc([...t.name][0] || '?')}</div>`}
@@ -120,6 +126,55 @@
       )
       .join('');
     $('#titlesEmpty').classList.toggle('hidden', list.length > 0);
+  }
+
+  /* ---------- Edit mode (Titles) ---------- */
+  function setEditMode(on) {
+    state.editMode = !!on;
+    $('#editModeBtn').textContent = on ? 'Done' : 'Edit';
+    renderGrid();
+  }
+
+  /* ---------- All Videos ---------- */
+  async function loadAllVideos() {
+    $('#allVideosLoading').classList.toggle('hidden', state.allVideos.length > 0);
+    try {
+      const { videos } = await Api.getAllVideos();
+      state.allVideos = videos;
+      renderAllVideos();
+    } catch (e) {
+      toast('Load မရပါ: ' + e.message);
+    } finally {
+      $('#allVideosLoading').classList.add('hidden');
+    }
+  }
+
+  function renderAllVideos() {
+    const box = $('#allVideoList');
+    box.innerHTML = state.allVideos.map((v) => videoRow(v, v.title_name)).join('');
+    box.classList.toggle('hidden', state.allVideos.length === 0);
+    $('#allVideosEmpty').classList.toggle('hidden', state.allVideos.length > 0);
+    bindDurations(box);
+  }
+
+  function videoRow(v, sub) {
+    return `
+      <button class="row" data-id="${v.id}">
+        <div class="thumb"><video src="${esc(v.url)}#t=0.5" preload="metadata" muted playsinline></video><span class="dur"></span></div>
+        <div class="row-text">
+          <div class="row-title">${esc(v.name)}</div>
+          <div class="row-sub">${sub ? esc(sub) + ' · ' : ''}${fmtDate(v.created_at)}${v.size ? ' · ' + fmtSize(v.size) : ''}</div>
+        </div>
+        <span class="chev">›</span>
+      </button>`;
+  }
+
+  function bindDurations(box) {
+    box.querySelectorAll('video').forEach((vid) => {
+      vid.addEventListener('loadedmetadata', () => {
+        vid.parentElement.querySelector('.dur').textContent = fmtDur(vid.duration);
+      });
+    });
   }
 
   /* ---------- Detail ---------- */
@@ -150,26 +205,10 @@
 
   function renderVideos() {
     const box = $('#videoList');
-    box.innerHTML = state.videos
-      .map(
-        (v) => `
-      <button class="row" data-id="${v.id}">
-        <div class="thumb"><video src="${esc(v.url)}#t=0.5" preload="metadata" muted playsinline></video><span class="dur"></span></div>
-        <div class="row-text">
-          <div class="row-title">${esc(v.name)}</div>
-          <div class="row-sub">${fmtDate(v.created_at)}${v.size ? ' · ' + fmtSize(v.size) : ''}</div>
-        </div>
-        <span class="chev">›</span>
-      </button>`
-      )
-      .join('');
+    box.innerHTML = state.videos.map((v) => videoRow(v, '')).join('');
     box.classList.toggle('hidden', state.videos.length === 0);
     $('#videosEmpty').classList.toggle('hidden', state.videos.length > 0);
-    box.querySelectorAll('video').forEach((vid) => {
-      vid.addEventListener('loadedmetadata', () => {
-        vid.parentElement.querySelector('.dur').textContent = fmtDur(vid.duration);
-      });
-    });
+    bindDurations(box);
   }
 
   /* ---------- New / Edit Title sheet ---------- */
@@ -303,7 +342,7 @@
 
   /* ---------- Player ---------- */
   function openPlayer(id) {
-    const v = state.videos.find((x) => x.id === id);
+    const v = state.videos.find((x) => x.id === id) || state.allVideos.find((x) => x.id === id);
     if (!v) return;
     state.playing = v;
     $('#playerName').textContent = v.name;
@@ -321,6 +360,7 @@
       v.name = name.trim();
       $('#playerName').textContent = v.name;
       renderVideos();
+      renderAllVideos();
       toast('ပြင်ပြီးပါပြီ ✓');
     } catch (e) {
       toast(e.message);
@@ -334,7 +374,9 @@
       await Api.deleteVideo(v.id);
       closeSheets();
       toast('ဖျက်ပြီးပါပြီ');
-      openTitle(state.current.id);
+      state.allVideos = state.allVideos.filter((x) => x.id !== v.id);
+      if (state.view === 'videos') renderAllVideos();
+      else if (state.current) openTitle(state.current.id);
       loadTitles();
     } catch (e) {
       toast(e.message);
@@ -369,7 +411,15 @@
   $('#search').addEventListener('input', renderGrid);
   $('#grid').addEventListener('click', (e) => {
     const card = e.target.closest('.card');
-    if (card) { haptic(); openTitle(card.dataset.id); }
+    if (!card) return;
+    haptic();
+    if (state.editMode) openTitleSheet(state.titles.find((t) => t.id === card.dataset.id));
+    else openTitle(card.dataset.id);
+  });
+  $('#editModeBtn').addEventListener('click', () => { haptic(); setEditMode(!state.editMode); });
+  $('#allVideoList').addEventListener('click', (e) => {
+    const row = e.target.closest('.row');
+    if (row) openPlayer(row.dataset.id);
   });
   $('#videoList').addEventListener('click', (e) => {
     const row = e.target.closest('.row');
