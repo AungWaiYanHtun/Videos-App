@@ -3,7 +3,7 @@
 // =====================================================
 window.APP_CONFIG = {
   // Cloudflare Worker deploy ပြီးရင်ရတဲ့ URL ကိုထည့်ပါ
-  API_URL: 'https://video-app-api.YOUR-NAME.workers.dev',
+  API_URL: 'https://videos-app-backend.aungwaiyanhtun786.workers.dev',
 
   // App ထိပ်ဆုံးမှာပြမယ့် နာမည်
   APP_TITLE: 'Titles',
