@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#f2f2f7" />
+  <title>Videos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <!-- ============ VIEW: Titles ============ -->
+  <section id="view-titles" class="view active">
+    <div class="nav-bar"><span></span></div>
+    <h1 class="large-title" id="appTitle">Titles</h1>
+    <div class="search-wrap">
+      <input id="search" class="search" type="search" placeholder="Search" autocomplete="off" />
+    </div>
+    <div id="grid" class="grid"></div>
+    <div id="titlesEmpty" class="empty hidden">
+      <div class="empty-icon">🎬</div>
+      <div class="empty-text">Title မရှိသေးပါ</div>
+      <div class="empty-sub">+ ကိုနှိပ်ပြီး Title အသစ်ဖန်တီးပါ</div>
+    </div>
+    <div id="titlesLoading" class="loading">Loading…</div>
+  </section>
+
+  <!-- ============ VIEW: Title detail ============ -->
+  <section id="view-detail" class="view">
+    <div class="hero">
+      <img id="heroImg" alt="" />
+      <button class="back-btn" id="backBtn">‹ Titles</button>
+      <div class="hero-text">
+        <h2 id="heroName"></h2>
+        <span id="heroCount"></span>
+      </div>
+    </div>
+    <div class="actions admin-only">
+      <button class="btn-filled" id="openUploadBtn">⬆︎ Upload Video</button>
+      <button class="btn-tinted" id="editTitleBtn">✎ Edit Title</button>
+    </div>
+    <div id="videoList" class="group list"></div>
+    <div id="videosEmpty" class="empty hidden">
+      <div class="empty-icon">📭</div>
+      <div class="empty-text">Video မရှိသေးပါ</div>
+    </div>
+  </section>
+
+  <!-- ============ VIEW: Settings ============ -->
+  <section id="view-settings" class="view">
+    <div class="nav-bar"><span></span></div>
+    <h1 class="large-title">Settings</h1>
+
+    <div class="section-label">Admin</div>
+    <div id="loginBox">
+      <div class="group">
+        <input id="pwInput" class="field" type="password" placeholder="Admin Password" />
+      </div>
+      <button class="btn-filled btn-block" id="loginBtn">Sign In</button>
+    </div>
+    <div id="logoutBox" class="hidden">
+      <div class="group">
+        <div class="cell">Signed in as Admin <span class="badge">✓</span></div>
+      </div>
+      <button class="btn-plain-red btn-block" id="logoutBtn">Sign Out</button>
+    </div>
+    <div class="section-foot">Sign in လုပ်မှ Title ဖန်တီး၊ Video တင်၊ ဖျက်လို့ရပါမယ်။ ကြည့်ရှုသူတွေက Public Title တွေကိုပဲ မြင်ရပါမယ်။</div>
+  </section>
+
+  <!-- Floating + button -->
+  <button id="fab" class="fab admin-only" aria-label="New Title">+</button>
+
+  <!-- Tab bar -->
+  <nav class="tab-bar">
+    <button class="tab active" data-tab="titles"><svg class="tab-icon" viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>Titles</button>
+    <button class="tab" data-tab="settings"><svg class="tab-icon" viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.4-2.5 1a7.6 7.6 0 0 0-1.7-1L15 3.3h-4l-.4 2.7a7.6 7.6 0 0 0-1.7 1l-2.5-1-2 3.4L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.4 2.5-1c.5.4 1.1.7 1.7 1l.4 2.7h4l.4-2.7c.6-.3 1.2-.6 1.7-1l2.5 1 2-3.4L19.4 13zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg>Settings</button>
+  </nav>
+
+  <!-- ============ SHEETS ============ -->
+  <div id="dim" class="dim"></div>
+
+  <!-- New / Edit Title -->
+  <div id="sheet-title" class="sheet">
+    <div class="grabber"></div>
+    <div class="sheet-head">
+      <button class="link" data-close>Cancel</button>
+      <span class="sheet-title" id="titleSheetHeading">New Title</span>
+      <button class="link bold" id="titleSaveTop">Save</button>
+    </div>
+    <div class="sheet-body">
+      <div class="section-label">Cover Photo</div>
+      <label class="cover-picker">
+        <div class="cover-preview" id="coverPreview"><span>🖼</span></div>
+        <span class="link bold" id="coverLabel">Choose Photo</span>
+        <input type="file" id="coverInput" accept="image/*" hidden />
+      </label>
+
+      <div class="section-label">Title Name</div>
+      <div class="group">
+        <input id="titleName" class="field" type="text" placeholder="ဥပမာ - မန္တလေး ခရီးစဉ်" maxlength="80" />
+      </div>
+
+      <div class="section-label">Options</div>
+      <div class="group">
+        <div class="cell">
+          Public
+          <label class="switch"><input type="checkbox" id="titlePublic" checked /><span></span></label>
+        </div>
+      </div>
+
+      <div class="progress hidden" id="titleProgress"><div class="progress-row"><span>Saving…</span><span></span></div><div class="bar"><i></i></div></div>
+
+      <button class="btn-filled btn-block" id="titleSaveBtn">Create Title</button>
+      <button class="btn-plain-red btn-block hidden" id="titleDeleteBtn">Delete Title</button>
+    </div>
+  </div>
+
+  <!-- Upload Video -->
+  <div id="sheet-upload" class="sheet">
+    <div class="grabber"></div>
+    <div class="sheet-head">
+      <button class="link" data-close>Cancel</button>
+      <span class="sheet-title">New Video</span>
+      <span class="link-spacer"></span>
+    </div>
+    <div class="sheet-body">
+      <div class="section-label">Video Name</div>
+      <div class="group">
+        <input id="videoName" class="field" type="text" placeholder="Video နာမည် (မထည့်ရင် file နာမည်)" maxlength="120" />
+      </div>
+
+      <div class="section-label">Video</div>
+      <label class="file-picker">
+        <div class="file-icon">🎞</div>
+        <div class="link bold" id="videoFileLabel">Choose Video</div>
+        <div class="file-sub" id="videoFileSub">MP4, MOV, WebM</div>
+        <input type="file" id="videoInput" accept="video/*" hidden />
+      </label>
+
+      <div class="progress hidden" id="uploadProgress"><div class="progress-row"><span>Uploading…</span><span id="uploadPct">0%</span></div><div class="bar"><i id="uploadBar"></i></div></div>
+
+      <button class="btn-filled btn-block" id="uploadBtn">Upload Video</button>
+    </div>
+  </div>
+
+  <!-- Player -->
+  <div id="sheet-player" class="sheet">
+    <div class="grabber"></div>
+    <div class="sheet-head">
+      <span class="link-spacer"></span>
+      <span class="sheet-title" id="playerName"></span>
+      <button class="link bold" data-close>Done</button>
+    </div>
+    <div class="sheet-body">
+      <video id="player" controls playsinline preload="metadata"></video>
+      <div class="player-meta" id="playerMeta"></div>
+      <div class="admin-only">
+        <button class="btn-tinted btn-block" id="renameVideoBtn">✎ Rename</button>
+        <button class="btn-plain-red btn-block" id="deleteVideoBtn">Delete Video</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
