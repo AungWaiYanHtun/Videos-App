@@ -14,7 +14,7 @@
 <body>
   <!-- ============ VIEW: Titles ============ -->
   <section id="view-titles" class="view active">
-    <div class="nav-bar"><span></span></div>
+    <div class="nav-bar"><span></span><button id="editModeBtn" class="nav-link admin-only">Edit</button></div>
     <h1 class="large-title" id="appTitle">Titles</h1>
     <div class="search-wrap">
       <input id="search" class="search" type="search" placeholder="Search" autocomplete="off" />
@@ -49,6 +49,18 @@
     </div>
   </section>
 
+  <!-- ============ VIEW: All Videos ============ -->
+  <section id="view-videos" class="view">
+    <div class="nav-bar"><span></span></div>
+    <h1 class="large-title">All Videos</h1>
+    <div id="allVideoList" class="group list hidden"></div>
+    <div id="allVideosEmpty" class="empty hidden">
+      <div class="empty-icon">📭</div>
+      <div class="empty-text">Video မရှိသေးပါ</div>
+    </div>
+    <div id="allVideosLoading" class="loading hidden">Loading…</div>
+  </section>
+
   <!-- ============ VIEW: Settings ============ -->
   <section id="view-settings" class="view">
     <div class="nav-bar"><span></span></div>
@@ -76,6 +88,7 @@
   <!-- Tab bar -->
   <nav class="tab-bar">
     <button class="tab active" data-tab="titles"><svg class="tab-icon" viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>Titles</button>
+    <button class="tab" data-tab="videos"><svg class="tab-icon" viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>All Videos</button>
     <button class="tab" data-tab="settings"><svg class="tab-icon" viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.4-2.5 1a7.6 7.6 0 0 0-1.7-1L15 3.3h-4l-.4 2.7a7.6 7.6 0 0 0-1.7 1l-2.5-1-2 3.4L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.4 2.5-1c.5.4 1.1.7 1.7 1l.4 2.7h4l.4-2.7c.6-.3 1.2-.6 1.7-1l2.5 1 2-3.4L19.4 13zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg>Settings</button>
   </nav>
 
