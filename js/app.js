@@ -7,12 +7,12 @@
 
   const state = {
     titles: [],
-    current: null,      // ဖွင့်ထားတဲ့ title
+    current: null,      // open title
     videos: [],
-    editing: null,      // ပြင်နေတဲ့ title (null = အသစ်)
+    editing: null,      // title being edited (null = new)
     coverFile: null,
     videoFile: null,
-    playing: null,      // ကြည့်နေတဲ့ video
+    playing: null,      // video being played
     view: 'titles',
     editMode: false,
     allVideos: [],
@@ -103,7 +103,7 @@
       state.titles = titles;
       renderGrid();
     } catch (e) {
-      toast('Load မရပါ: ' + e.message);
+      toast('Could not load: ' + e.message);
     } finally {
       $('#titlesLoading').classList.add('hidden');
     }
@@ -148,7 +148,7 @@
       state.allVideos = videos;
       renderAllVideos();
     } catch (e) {
-      toast('Load မရပါ: ' + e.message);
+      toast('Could not load: ' + e.message);
     } finally {
       $('#allVideosLoading').classList.add('hidden');
     }
@@ -238,7 +238,7 @@
     $('#coverLabel').textContent = url ? 'Change Photo' : 'Choose Photo';
   }
 
-  // Cover ပုံကို 1000px အထိ ချုံ့ပြီး JPEG ပြောင်း
+  // Shrink cover image to max 1000px and convert to JPEG
   function resizeImage(file, max = 1000) {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -251,14 +251,14 @@
         c.toBlob((b) => (b ? resolve(b) : reject(new Error('Image error'))), 'image/jpeg', 0.85);
         URL.revokeObjectURL(img.src);
       };
-      img.onerror = () => reject(new Error('ပုံဖွင့်လို့မရပါ'));
+      img.onerror = () => reject(new Error('Could not open image'));
       img.src = URL.createObjectURL(file);
     });
   }
 
   async function saveTitle() {
     const name = $('#titleName').value.trim();
-    if (!name) return toast('Title နာမည်ထည့်ပါ');
+    if (!name) return toast('Enter a title name');
     const btns = [$('#titleSaveBtn'), $('#titleSaveTop')];
     btns.forEach((b) => (b.disabled = true));
     const prog = $('#titleProgress');
@@ -278,16 +278,16 @@
         const { title } = await Api.updateTitle(state.editing.id, data);
         state.current = title;
         renderHero(title, state.videos.length);
-        toast('ပြင်ပြီးပါပြီ ✓');
+        toast('Saved ✓');
       } else {
         await Api.createTitle(data);
-        toast('Title ဖန်တီးပြီးပါပြီ ✓');
+        toast('Title created ✓');
       }
       bar.style.width = '100%';
       closeSheets();
       loadTitles();
     } catch (e) {
-      toast('မအောင်မြင်ပါ: ' + e.message);
+      toast('Failed: ' + e.message);
     } finally {
       btns.forEach((b) => (b.disabled = false));
       prog.classList.add('hidden');
@@ -296,12 +296,12 @@
 
   async function deleteTitle() {
     if (!state.editing) return;
-    if (!confirm(`"${state.editing.name}" နဲ့ ထဲက video အားလုံးကို ဖျက်မှာ သေချာလား?`)) return;
+    if (!confirm(`Delete "${state.editing.name}" and all its videos?`)) return;
     try {
       await Api.deleteTitle(state.editing.id);
       closeSheets();
       showView('titles');
-      toast('ဖျက်ပြီးပါပြီ');
+      toast('Deleted');
       loadTitles();
     } catch (e) {
       toast(e.message);
@@ -322,7 +322,7 @@
 
   async function uploadVideo() {
     const file = state.videoFile;
-    if (!file) return toast('Video ရွေးပါ');
+    if (!file) return toast('Choose a video');
     if (!state.current) return;
     const name = $('#videoName').value.trim() || file.name.replace(/\.[^.]+$/, '');
     const btn = $('#uploadBtn');
@@ -335,11 +335,11 @@
       });
       await Api.addVideo({ title_id: state.current.id, name, key: up.key, size: file.size, content_type: file.type });
       closeSheets();
-      toast('Upload ပြီးပါပြီ ✓');
+      toast('Upload complete ✓');
       openTitle(state.current.id);
       loadTitles();
     } catch (e) {
-      toast('Upload မရပါ: ' + e.message);
+      toast('Upload failed: ' + e.message);
     } finally {
       btn.disabled = false;
     }
@@ -358,7 +358,7 @@
 
   async function renameVideo() {
     const v = state.playing;
-    const name = prompt('Video နာမည်အသစ်', v.name);
+    const name = prompt('New video name', v.name);
     if (!name || !name.trim() || name === v.name) return;
     try {
       await Api.renameVideo(v.id, name.trim());
@@ -366,7 +366,7 @@
       $('#playerName').textContent = v.name;
       renderVideos();
       renderAllVideos();
-      toast('ပြင်ပြီးပါပြီ ✓');
+      toast('Saved ✓');
     } catch (e) {
       toast(e.message);
     }
@@ -374,11 +374,11 @@
 
   async function deleteVideo() {
     const v = state.playing;
-    if (!confirm(`"${v.name}" ကို ဖျက်မှာ သေချာလား?`)) return;
+    if (!confirm(`Delete "${v.name}"?`)) return;
     try {
       await Api.deleteVideo(v.id);
       closeSheets();
-      toast('ဖျက်ပြီးပါပြီ');
+      toast('Deleted');
       state.allVideos = state.allVideos.filter((x) => x.id !== v.id);
       if (state.view === 'videos') renderAllVideos();
       else if (state.current) openTitle(state.current.id);
@@ -391,23 +391,23 @@
   /* ---------- Settings ---------- */
   async function login() {
     const pw = $('#pwInput').value;
-    if (!pw) return toast('Password ထည့်ပါ');
+    if (!pw) return toast('Enter the password');
     Api.setPassword(pw);
     try {
       await Api.check();
       setAdmin(true);
       $('#pwInput').value = '';
-      toast('Sign in ဝင်ပြီးပါပြီ ✓');
+      toast('Signed in ✓');
       loadTitles();
     } catch (e) {
       Api.setPassword('');
-      toast('Password မှားနေပါတယ်');
+      toast('Wrong password');
     }
   }
   function logout() {
     Api.setPassword('');
     setAdmin(false);
-    toast('Sign out ပြီးပါပြီ');
+    toast('Signed out');
     loadTitles();
   }
 

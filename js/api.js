@@ -1,8 +1,11 @@
 // =====================================================
-// API - Worker နဲ့ ဆက်သွယ်တဲ့ function များ
+// API - talks to the Worker
 // =====================================================
 (function () {
   const BASE = String(window.APP_CONFIG.API_URL || '').replace(/\/+$/, '');
+  // File links saved as <worker>/f/... are shown through this site's /f/ proxy
+  const WORKER = String(window.APP_CONFIG.WORKER_URL || '').replace(/\/+$/, '');
+  const localize = (txt) => (WORKER ? txt.split(WORKER + '/f/').join('/f/') : txt);
   const PW_KEY = 'video_app_admin_pw';
 
   const getPassword = () => localStorage.getItem(PW_KEY) || '';
@@ -17,12 +20,14 @@
       headers,
       body: body ? JSON.stringify(body) : undefined,
     });
-    const data = await res.json().catch(() => ({}));
+    const text = await res.text();
+    let data = {};
+    try { data = JSON.parse(localize(text)); } catch {}
     if (!res.ok) throw new Error(data.error || 'HTTP ' + res.status);
     return data;
   }
 
-  // File ကို R2 ဆီ တိုက်ရိုက် upload (progress ပါ)
+  // Upload the file straight to storage (with progress)
   async function upload(file, kind, filename, contentType, onProgress) {
     const signed = await request('/api/sign', {
       method: 'POST',
@@ -36,7 +41,7 @@
         if (e.lengthComputable && onProgress) onProgress(Math.round((e.loaded / e.total) * 100));
       };
       xhr.onload = () => (xhr.status < 300 ? resolve() : reject(new Error('Upload failed (' + xhr.status + ')')));
-      xhr.onerror = () => reject(new Error('Network error - Sign out/Sign in ပြန်ဝင်ကြည့်ပါ'));
+      xhr.onerror = () => reject(new Error('Upload network error - sign out and sign in again, then retry'));
       xhr.send(file);
     });
     return signed; // { key, publicUrl }
