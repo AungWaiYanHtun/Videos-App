@@ -469,7 +469,10 @@
   /* ---------- Start ---------- */
   (async function init() {
     if (Api.getPassword()) {
-      try { await Api.check(); setAdmin(true); } catch { Api.setPassword(''); setAdmin(false); }
+      try { await Api.check(); setAdmin(true); } catch (e) {
+        // Only sign out on a wrong password; keep admin on a network hiccup
+        if (/Wrong password|HTTP 401/.test(e.message)) { Api.setPassword(''); setAdmin(false); } else setAdmin(true);
+      }
     } else {
       setAdmin(false);
     }
