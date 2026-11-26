@@ -352,8 +352,11 @@
     state.playing = v;
     $('#playerName').textContent = v.name;
     $('#playerMeta').textContent = fmtDate(v.created_at) + (v.size ? ' · ' + fmtSize(v.size) : '');
-    $('#player').src = v.url;
+    const p = $('#player');
+    p.loop = !!(window.Prefs && Prefs.get('loop'));
+    p.src = v.url;
     openSheet('sheet-player');
+    if (window.Prefs && Prefs.get('autoplay')) p.play().catch(() => {});
   }
 
   async function renameVideo() {
