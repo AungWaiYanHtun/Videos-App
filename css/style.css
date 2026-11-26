@@ -9,7 +9,7 @@
   --separator: #c6c6c8;
   --fill: #e3e3e8;
   --blue: #007aff;
-  --blue-tint: #e5f0ff;
+  --blue-tint: color-mix(in srgb, var(--blue) 12%, #fff);
   --red: #ff3b30;
   --green: #34c759;
   --radius: 12px;
@@ -17,8 +17,8 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+html[data-theme="dark"] {
+  color-scheme: dark;
     --bg: #000000;
     --card: #1c1c1e;
     --label: #ffffff;
@@ -26,16 +26,15 @@
     --separator: #38383a;
     --fill: #1c1c1e;
     --blue: #0a84ff;
-    --blue-tint: #0a2a4d;
+    --blue-tint: color-mix(in srgb, var(--blue) 22%, #000);
     --red: #ff453a;
     --green: #30d158;
-  }
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { background: var(--bg); color: var(--label); }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Noto Sans Myanmar", Arial, sans-serif;
+  font-family: var(--font, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Noto Sans Myanmar", Arial, sans-serif);
   font-size: 17px;
   min-height: 100vh;
   padding-bottom: calc(76px + var(--safe-bottom));
@@ -133,7 +132,7 @@ button:disabled { opacity: .45; pointer-events: none; }
 .fab {
   position: fixed; right: max(20px, calc(50% - 300px)); bottom: calc(100px + var(--safe-bottom));
   width: 56px; height: 56px; border-radius: 28px; background: var(--blue); color: #fff; font-size: 30px; line-height: 1;
-  box-shadow: 0 6px 16px rgba(0,122,255,.4); z-index: 20; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--blue) 40%, transparent); z-index: 20; display: flex; align-items: center; justify-content: center;
 }
 .fab:active { transform: scale(.92); }
 
@@ -143,7 +142,7 @@ button:disabled { opacity: .45; pointer-events: none; }
   padding: 7px 0 calc(8px + var(--safe-bottom)); background: rgba(249,249,249,.94); backdrop-filter: blur(20px);
   border-top: .5px solid var(--separator);
 }
-@media (prefers-color-scheme: dark) { .tab-bar { background: rgba(22,22,22,.94); } }
+html[data-theme="dark"] .tab-bar { background: rgba(22,22,22,.94); }
 .tab { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: var(--secondary); min-width: 80px; }
 .tab-icon { margin-bottom: 2px; }
 .tab.active { color: var(--blue); }
@@ -207,7 +206,7 @@ body:not(.is-admin) .admin-only { display: none !important; }
    Telegram-style header + glass tab bar (2026-11-26)
    ===================================================== */
 :root { --glass: rgba(255,255,255,.62); --glass-border: rgba(255,255,255,.7); --glass-shadow: 0 8px 30px rgba(0,0,0,.12); --header-bg: rgba(242,242,247,.82); }
-@media (prefers-color-scheme: dark) { :root { --glass: rgba(40,40,44,.6); --glass-border: rgba(255,255,255,.12); --glass-shadow: 0 8px 30px rgba(0,0,0,.5); --header-bg: rgba(0,0,0,.78); } }
+html[data-theme="dark"] { --glass: rgba(40,40,44,.6); --glass-border: rgba(255,255,255,.12); --glass-shadow: 0 8px 30px rgba(0,0,0,.5); --header-bg: rgba(0,0,0,.78); }
 
 .tg-header {
   position: sticky; top: 0; z-index: 25;
@@ -234,8 +233,8 @@ body:not(.is-admin) .admin-only { display: none !important; }
 .fab {
   width: 46px; height: 46px; border-radius: 23px; font-size: 0;
   bottom: calc(70px + var(--safe-bottom)); right: max(18px, calc(50% - 302px));
-  background: linear-gradient(160deg, #3d9bff, var(--blue));
-  box-shadow: 0 6px 18px rgba(0,122,255,.35), inset 0 1px 0 rgba(255,255,255,.35);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--blue) 70%, #fff), var(--blue));
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--blue) 35%, transparent), inset 0 1px 0 rgba(255,255,255,.35);
 }
 
 /* Floating glass tab bar */
@@ -246,12 +245,68 @@ body:not(.is-admin) .admin-only { display: none !important; }
   background: var(--glass); box-shadow: var(--glass-shadow);
   -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%);
 }
-@media (prefers-color-scheme: dark) { .tab-bar { background: var(--glass); } }
+html[data-theme="dark"] .tab-bar { background: var(--glass); }
 .tab {
   flex: 1; min-width: 0; padding: 3px 0 2px; border-radius: 21px; font-size: 10px; font-weight: 500;
   color: var(--label); opacity: .75; transition: background .25s, color .25s, opacity .25s;
 }
 .tab .tab-icon { width: 19px; height: 19px; margin-bottom: 1px; }
-.tab.active { color: var(--blue); opacity: 1; background: rgba(0,122,255,.14); }
+.tab.active { color: var(--blue); opacity: 1; background: color-mix(in srgb, var(--blue) 14%, transparent); }
 
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+/* =====================================================
+   Settings: theme, accent, layout, playback
+   ===================================================== */
+.seg { display: flex; background: var(--fill); border-radius: 9px; padding: 2px; gap: 2px; }
+.seg button { flex: 1; padding: 6px 4px; font-size: 13px; font-weight: 500; border-radius: 7px; color: var(--label); }
+.seg button.on { background: var(--card); box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+html[data-theme="dark"] .seg { background: #2c2c2e; }
+html[data-theme="dark"] .seg button.on { background: #636366; }
+.set-cell { padding: 10px 16px; }
+.set-cell + .set-cell, .group .cell + .cell { border-top: .5px solid var(--separator); }
+.set-name { font-size: 15px; margin-bottom: 8px; }
+.cell .set-name { margin: 0; }
+.swatches { display: flex; gap: 12px; flex-wrap: wrap; }
+.swatch { width: 28px; height: 28px; border-radius: 50%; position: relative; }
+.swatch.on::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid currentColor; }
+.cell .switch { transform: scale(.85); transform-origin: right center; }
+.cell-btn { width: 100%; text-align: left; font-size: 15px; color: var(--blue); }
+.cell-btn.red { color: var(--red); }
+.muted { color: var(--secondary); font-size: 14px; }
+html[data-theme="dark"] .switch span { background: #39393d; }
+
+/* Grid layout + text size options */
+html[data-cols="3"] .grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+html[data-cols="3"] .card-name { font-size: 13px; }
+html[data-cols="3"] .card-sub { font-size: 11px; }
+html[data-size="small"] body { zoom: .92; }
+html[data-size="large"] body { zoom: 1.1; }
+html[data-theme="dark"] .switch input:checked + span { background: var(--green); }
+
+input, textarea, select { font-family: inherit; }
+
+/* Theme presets (wallpaper backgrounds) */
+html[data-preset="on"] { background-color: var(--bg); background-image: var(--app-bg); background-attachment: fixed; background-size: cover; min-height: 100%; }
+html[data-preset="on"] body { background: transparent; }
+html[data-preset="on"] { --header-bg: rgba(255,255,255,.35); --card: rgba(255,255,255,.82); }
+html[data-preset="on"][data-theme="dark"] { --header-bg: rgba(0,0,0,.3); --card: rgba(28,28,30,.72); --fill: rgba(255,255,255,.1); }
+html[data-preset="on"] .group, html[data-preset="on"] .card { -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+
+.h-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 2px 16px 6px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.h-scroll::-webkit-scrollbar { display: none; }
+.theme-card { flex: 0 0 auto; width: 78px; text-align: center; }
+.theme-prev { position: relative; height: 104px; border-radius: 14px; overflow: hidden; border: 2px solid transparent; box-shadow: 0 2px 8px rgba(0,0,0,.12); padding: 10px 8px; display: flex; flex-direction: column; gap: 6px; }
+.theme-card.on .theme-prev { border-color: var(--blue); box-shadow: 0 0 0 2px color-mix(in srgb, var(--blue) 30%, transparent); }
+.tp-card { display: block; height: 22px; border-radius: 7px; background: rgba(255,255,255,.85); }
+.theme-prev.dark .tp-card { background: rgba(255,255,255,.14); }
+.tp-card.short { width: 70%; }
+.tp-pill { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); width: 34px; height: 10px; border-radius: 5px; }
+.theme-name { font-size: 12px; margin-top: 6px; color: var(--secondary); }
+.theme-card.on .theme-name { color: var(--blue); font-weight: 600; }
+
+.font-chip { flex: 0 0 auto; width: 78px; height: 72px; border-radius: 14px; background: var(--card); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border: 2px solid transparent; }
+.font-chip .aa { font-size: 24px; font-weight: 600; line-height: 1.1; }
+.font-chip .fn { font-size: 11px; color: var(--secondary); }
+.font-chip.on { border-color: var(--blue); }
+.font-chip.on .fn { color: var(--blue); font-weight: 600; }
