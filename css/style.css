@@ -38,7 +38,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Noto Sans Myanmar", Arial, sans-serif;
   font-size: 17px;
   min-height: 100vh;
-  padding-bottom: calc(90px + var(--safe-bottom));
+  padding-bottom: calc(110px + var(--safe-bottom));
   max-width: 640px;
   margin: 0 auto;
 }
@@ -202,3 +202,54 @@ body:not(.is-admin) .admin-only { display: none !important; }
 .edit-badge { position: absolute; top: 8px; right: 8px; z-index: 2; width: 28px; height: 28px; border-radius: 14px; background: var(--blue); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
 @keyframes wiggle { from { transform: rotate(-.6deg); } to { transform: rotate(.6deg); } }
 .row-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* =====================================================
+   Telegram-style header + glass tab bar (2026-11-26)
+   ===================================================== */
+:root { --glass: rgba(255,255,255,.62); --glass-border: rgba(255,255,255,.7); --glass-shadow: 0 8px 30px rgba(0,0,0,.12); --header-bg: rgba(242,242,247,.82); }
+@media (prefers-color-scheme: dark) { :root { --glass: rgba(40,40,44,.6); --glass-border: rgba(255,255,255,.12); --glass-shadow: 0 8px 30px rgba(0,0,0,.5); --header-bg: rgba(0,0,0,.78); } }
+
+.tg-header {
+  position: sticky; top: 0; z-index: 25;
+  padding: calc(10px + var(--safe-top)) 0 4px;
+  background: var(--header-bg);
+  -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%);
+}
+.tg-row { display: flex; align-items: center; justify-content: space-between; padding: 0 16px; min-height: 48px; }
+.tg-header .large-title { font-size: 28px; font-weight: 700; letter-spacing: -.3px; padding: 0; color: var(--blue); }
+.tg-header .search-wrap { padding: 6px 16px 10px; }
+.tg-header .search { border-radius: 999px; padding: 11px 16px 11px 42px; background-position: 16px center; font-size: 16px; }
+.view > .grid, .view > .group, .view > .section-label { margin-top: 8px; }
+
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center;
+  color: var(--blue); background: var(--glass); border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 2px 10px rgba(0,0,0,.08);
+  transition: transform .15s, background .2s;
+}
+.icon-btn:active { transform: scale(.9); }
+.icon-btn.on { background: var(--blue); color: #fff; border-color: transparent; }
+
+/* FAB - Telegram style */
+.fab {
+  width: 58px; height: 58px; border-radius: 29px; font-size: 0;
+  bottom: calc(104px + var(--safe-bottom)); right: max(18px, calc(50% - 302px));
+  background: linear-gradient(160deg, #3d9bff, var(--blue));
+  box-shadow: 0 6px 18px rgba(0,122,255,.35), inset 0 1px 0 rgba(255,255,255,.35);
+}
+
+/* Floating glass tab bar */
+.tab-bar {
+  left: 14px; right: 14px; bottom: calc(12px + var(--safe-bottom));
+  max-width: 560px; margin: 0 auto; padding: 6px; gap: 4px;
+  border-radius: 34px; border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-border);
+  background: var(--glass); box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%);
+}
+@media (prefers-color-scheme: dark) { .tab-bar { background: var(--glass); } }
+.tab {
+  flex: 1; min-width: 0; padding: 7px 0 6px; border-radius: 28px; font-size: 12px; font-weight: 500;
+  color: var(--label); opacity: .75; transition: background .25s, color .25s, opacity .25s;
+}
+.tab .tab-icon { width: 24px; height: 24px; margin-bottom: 3px; }
+.tab.active { color: var(--blue); opacity: 1; background: rgba(0,122,255,.14); }
