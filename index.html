@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="js/settings.js"></script>
 </head>
 <body>
   <!-- ============ VIEW: Titles ============ -->
@@ -67,6 +68,46 @@
   <!-- ============ VIEW: Settings ============ -->
   <section id="view-settings" class="view">
     <header class="tg-header"><div class="tg-row"><h1 class="large-title">Settings</h1></div></header>
+
+    <div class="section-label">Themes</div>
+    <div class="h-scroll" id="themeCards"></div>
+
+    <div class="section-label">Font</div>
+    <div class="h-scroll" id="fontChips"></div>
+
+    <div class="section-label">Appearance</div>
+    <div class="group">
+      <div class="set-cell">
+        <div class="set-name">Theme</div>
+        <div class="seg" data-pref="theme"><button data-v="system">System</button><button data-v="light">Light</button><button data-v="dark">Dark</button></div>
+      </div>
+      <div class="set-cell">
+        <div class="set-name">Accent color</div>
+        <div class="swatches" id="swatches"></div>
+      </div>
+      <div class="set-cell">
+        <div class="set-name">Titles layout</div>
+        <div class="seg" data-pref="cols"><button data-v="2">2 columns</button><button data-v="3">3 columns</button></div>
+      </div>
+      <div class="set-cell">
+        <div class="set-name">Text size</div>
+        <div class="seg" data-pref="size"><button data-v="small">Small</button><button data-v="default">Default</button><button data-v="large">Large</button></div>
+      </div>
+    </div>
+
+    <div class="section-label">Playback</div>
+    <div class="group">
+      <div class="cell"><span class="set-name">Autoplay videos</span><label class="switch"><input type="checkbox" data-toggle="autoplay" /><span></span></label></div>
+      <div class="cell"><span class="set-name">Loop videos</span><label class="switch"><input type="checkbox" data-toggle="loop" /><span></span></label></div>
+    </div>
+
+    <div class="section-label">App</div>
+    <div class="group">
+      <div class="cell"><button class="cell-btn" id="shareAppBtn">Share app link</button></div>
+      <div class="cell"><button class="cell-btn" id="refreshAppBtn">Refresh app</button></div>
+      <div class="cell"><button class="cell-btn red" id="resetPrefsBtn">Reset settings</button></div>
+      <div class="cell"><span class="set-name">Version</span><span class="muted">1.1</span></div>
+    </div>
 
     <div class="section-label">Admin</div>
     <div id="loginBox">
