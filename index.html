@@ -26,8 +26,8 @@
     <div id="grid" class="grid"></div>
     <div id="titlesEmpty" class="empty hidden">
       <div class="empty-icon">🎬</div>
-      <div class="empty-text">Title မရှိသေးပါ</div>
-      <div class="empty-sub">+ ကိုနှိပ်ပြီး Title အသစ်ဖန်တီးပါ</div>
+      <div class="empty-text">No titles yet</div>
+      <div class="empty-sub">Tap + to create a new title</div>
     </div>
     <div id="titlesLoading" class="loading">Loading…</div>
   </section>
@@ -49,7 +49,7 @@
     <div id="videoList" class="group list"></div>
     <div id="videosEmpty" class="empty hidden">
       <div class="empty-icon">📭</div>
-      <div class="empty-text">Video မရှိသေးပါ</div>
+      <div class="empty-text">No videos yet</div>
     </div>
   </section>
 
@@ -59,7 +59,7 @@
     <div id="allVideoList" class="group list hidden"></div>
     <div id="allVideosEmpty" class="empty hidden">
       <div class="empty-icon">📭</div>
-      <div class="empty-text">Video မရှိသေးပါ</div>
+      <div class="empty-text">No videos yet</div>
     </div>
     <div id="allVideosLoading" class="loading hidden">Loading…</div>
   </section>
@@ -81,7 +81,7 @@
       </div>
       <button class="btn-plain-red btn-block" id="logoutBtn">Sign Out</button>
     </div>
-    <div class="section-foot">Sign in လုပ်မှ Title ဖန်တီး၊ Video တင်၊ ဖျက်လို့ရပါမယ်။ ကြည့်ရှုသူတွေက Public Title တွေကိုပဲ မြင်ရပါမယ်။</div>
+    <div class="section-foot">Sign in to create titles and upload or delete videos. Viewers only see public titles.</div>
   </section>
 
   <!-- Floating + button -->
@@ -115,7 +115,7 @@
 
       <div class="section-label">Title Name</div>
       <div class="group">
-        <input id="titleName" class="field" type="text" placeholder="ဥပမာ - မန္တလေး ခရီးစဉ်" maxlength="80" />
+        <input id="titleName" class="field" type="text" placeholder="e.g. Summer Trip" maxlength="80" />
       </div>
 
       <div class="section-label">Options</div>
@@ -144,7 +144,7 @@
     <div class="sheet-body">
       <div class="section-label">Video Name</div>
       <div class="group">
-        <input id="videoName" class="field" type="text" placeholder="Video နာမည် (မထည့်ရင် file နာမည်)" maxlength="120" />
+        <input id="videoName" class="field" type="text" placeholder="Video name (optional, uses file name)" maxlength="120" />
       </div>
 
       <div class="section-label">Video</div>

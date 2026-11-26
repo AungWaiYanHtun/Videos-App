@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://videos-app-backend.aungwaiyanhtun786.workers.dev/api/:path*" },
+    { "source": "/f/:path*", "destination": "https://videos-app-backend.aungwaiyanhtun786.workers.dev/f/:path*" }
+  ]
+}
