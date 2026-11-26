@@ -131,7 +131,12 @@
   /* ---------- Edit mode (Titles) ---------- */
   function setEditMode(on) {
     state.editMode = !!on;
-    $('#editModeBtn').textContent = on ? 'Done' : 'Edit';
+    const b = $('#editModeBtn');
+    if (!b.dataset.pen) b.dataset.pen = b.innerHTML;
+    b.classList.toggle('on', !!on);
+    b.innerHTML = on
+      ? '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
+      : b.dataset.pen;
     renderGrid();
   }
 
